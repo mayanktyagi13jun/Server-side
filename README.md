@@ -19,7 +19,7 @@ The folder structure of this app is explained below:
 | **src/middlewares**      | Express middlewares which process the incoming requests before handling them down to the routes
 | **src/routes**           | Contain all express routes, separated by module/area of application                       
 | **src/models**           | Models define schemas that will be used in storing and retrieving data from Application database  |
-| **src**/index.ts         | Entry point to express app                                                               |
+| **src**/index.js         | Entry point to express app                                                               |
 | package.json             | Contains npm dependencies as well as [build scripts](#what-if-a-library-isnt-on-definitelytyped)   | 
 
 
