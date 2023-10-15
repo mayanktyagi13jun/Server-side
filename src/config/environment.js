@@ -8,7 +8,8 @@ if(process.env.NODE_ENV !== "prod") {
 }
 
 const PORT = process.env.PORT;
+const DB_URL = process.env.DB_URL;
 
 export {
-   PORT
+   PORT, DB_URL
 }

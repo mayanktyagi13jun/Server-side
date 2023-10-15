@@ -1,14 +1,21 @@
-import express from 'express';
-
-
+import express from "express";
+import userRoutes from "./routes/userRoutes.js";
+import morgan from "morgan";
 
 export async function expressApp(app) {
 
-    // app.use(express.json({ limit: "1mb" }));
-    // app.use(express.urlencoded({ extended: true, limit: "1mb" }));
+  // Development logging
+  if(process.env.NODE_ENV === "dev") {
+    app.use(morgan("dev"));
+  }
 
-    app.get('/', (req, res) => {
-        res.send('Hello World!');
-    });
-    
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true}));
+
+  
+// Api Routes
+  app.use("/api/v1/user/", userRoutes);
+  app.all('*', (req, res) => {
+    res.status(404).send({ status: 'fail', message: `Can not find ${req.originalUrl} on this Server!`});
+  });
 }
