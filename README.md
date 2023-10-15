@@ -14,7 +14,7 @@ The folder structure of this app is explained below:
 | ------------------------ | --------------------------------------------------------------------------------------------- |
 | **node_modules**         | Contains all  npm dependencies                                                            |
 | **src**                  | Contains  source code                              |
-| **configuration**        | Application configuration including environment-specific configs 
+| **src/configuration**    | Application configuration including environment-specific configs 
 | **src/controllers**      | Controllers define functions to serve various express routes. 
 | **src/middlewares**      | Express middlewares which process the incoming requests before handling them down to the routes
 | **src/routes**           | Contain all express routes, separated by module/area of application                       
