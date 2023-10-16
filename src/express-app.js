@@ -1,6 +1,7 @@
 import express from "express";
 import userRoutes from "./routes/userRoutes.js";
 import morgan from "morgan";
+import cookieparser from "cookie-parser"
 
 export async function expressApp(app) {
 
@@ -11,6 +12,8 @@ export async function expressApp(app) {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true}));
+
+  app.use(cookieparser());
 
   
 // Api Routes
