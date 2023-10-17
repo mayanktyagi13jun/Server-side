@@ -1,10 +1,12 @@
 import User from "../models/user.js";
 import { generateToken } from "../utils/generateToken.js";
+import  AppError  from "../utils/appError.js";
+import catchAsync from '../utils/catchAsync.js'
 
 //@desc Register a user
 //@route POST /api/v1/user/register
 //@access public
-const register = async (req, res) => {
+const register = catchAsync(async (req, res, next) => {
   const { firstname, lastname, email, password, mobile } = req.body;
 
   if (!firstname || !lastname || !email || !password)
@@ -12,7 +14,7 @@ const register = async (req, res) => {
       .status(400)
       .json({ message: "Please enter all required field." });
 
-  try {
+  // try {
     /*
      * Currently we are not checking for duplicate emails in the db because in User Schema we are using email as unique.
      * check for duplicate usernames in the db
@@ -30,11 +32,12 @@ const register = async (req, res) => {
       message: "User created successfully",
       data: user,
     });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: error, message: error.message });
-  }
-};
+  // } catch (error) {
+  //   //console.log(error);
+  //   // res.status(500).json({ error: error, message: error.message });
+  //   return next(new AppError("fuck off", 500));
+  // }
+});
 
 //@desc Login a user and generate accces, refresh token
 //@route POST /api/v1/user/login
