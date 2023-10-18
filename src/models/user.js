@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import crpto from "crypto";
 
 // User Schema
 const userSchema = new mongoose.Schema(
@@ -34,6 +35,8 @@ const userSchema = new mongoose.Schema(
       match: [/\d{10}/, "no should only have digits"],
     },
     refreshToken: [String],
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
   },
   {
     toJSON: {
@@ -61,10 +64,23 @@ userSchema.pre("save", async function (next) {
 // function to compare the password entered by user with the hashed password in the database
 
 userSchema.methods.comparePassword = async function (enteredPassword) {
- 
   return await bcrypt.compare(enteredPassword, this.password);
-
 };
+
+// function to generate a password reset token
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crpto.randomBytes(32).toString("hex");
+  this.resetPasswordToken = crpto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+  return resetToken;
+};
+
 const User = mongoose.model("User", userSchema);
 
 export default User;
