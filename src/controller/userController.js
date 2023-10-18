@@ -1,7 +1,7 @@
 import User from "../models/user.js";
 import { generateToken } from "../utils/generateToken.js";
-import  AppError  from "../utils/appError.js";
-import catchAsync from '../utils/catchAsync.js'
+import AppError from "../utils/appError.js";
+import catchAsync from "../utils/catchAsync.js";
 
 //@desc Register a user
 //@route POST /api/v1/user/register
@@ -15,27 +15,27 @@ const register = catchAsync(async (req, res, next) => {
       .json({ message: "Please enter all required field." });
 
   // try {
-    /*
-     * Currently we are not checking for duplicate emails in the db because in User Schema we are using email as unique.
-     * check for duplicate usernames in the db
-     * const duplicate = await User.findOne({ email: email }).exec();
-     * if (duplicate) return res.sendStatus(409); //Conflict
-     */
-    const user = await User.create({
-      firstname,
-      lastname,
-      email,
-      password,
-      mobile,
-    });
-    res.status(201).json({
-      message: "User created successfully",
-      data: user,
-    });
+  /*
+   * Currently we are not checking for duplicate emails in the db because in User Schema we are using email as unique.
+   * check for duplicate usernames in the db
+   * const duplicate = await User.findOne({ email: email }).exec();
+   * if (duplicate) return res.sendStatus(409); //Conflict
+   */
+  const user = await User.create({
+    firstname,
+    lastname,
+    email,
+    password,
+    mobile,
+  });
+  res.status(201).json({
+    message: "User created successfully",
+    data: user,
+  });
   // } catch (error) {
   //   //console.log(error);
   //   // res.status(500).json({ error: error, message: error.message });
-  //   return next(new AppError("fuck off", 500));
+  //   return next(new AppError("error", 500));
   // }
 });
 
@@ -102,15 +102,50 @@ const handleLogin = async (req, res) => {
     res.clearCookie("jwt", cookieOptions);
   }
 
-  // Saving refreshToken with current user 
+  // Saving refreshToken with current user
   foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
   const result = await foundUser.save();
   console.log(result);
 
-  cookieOptions.maxAge =  60 * 60 * 1000; // 1 hour
+  cookieOptions.maxAge = 60 * 60 * 1000; // 1 hour
   res.cookie("jwt", newRefreshToken, cookieOptions);
 
-  return res.status(200).json({ message: "Login successful", refreshToken: newRefreshToken, accessToken: accessToken });
+  return res.status(200).json({
+    message: "Login successful",
+    refreshToken: newRefreshToken,
+    accessToken: accessToken,
+  });
 };
 
-export { register, handleLogin };
+const handleLogout = async (req, res) => {
+  // On client, also delete the accessToken
+
+  const cookies = req.cookies;
+  if (!cookies?.jwt) return res.sendStatus(204); //No content
+  const refreshToken = cookies.jwt;
+
+  const cookieOptions = {
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === "prod") cookieOptions.secure = true;
+
+
+  // Is refreshToken in db?
+  const foundUser = await User.findOne({ refreshToken }).exec();
+  if (!foundUser) {
+    res.clearCookie("jwt", cookieOptions);
+    return res.sendStatus(204);
+  }
+
+  // Delete refreshToken in db
+  foundUser.refreshToken = foundUser.refreshToken.filter(
+    (rt) => rt !== refreshToken
+  );
+  const result = await foundUser.save();
+  console.log(result);
+
+  res.clearCookie("jwt", cookieOptions);
+  res.sendStatus(204);
+};
+
+export { register, handleLogin, handleLogout };
