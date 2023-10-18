@@ -1,6 +1,6 @@
 # Project Title
 
-A nice project with a nice description
+A backend project in Node js. Follow MVC pattern for all functionality. Added functionality for User registration, login, logout, Forget password & reset password via email provided. Authentication via JWT Security.
 
 ---
 ## Requirements
